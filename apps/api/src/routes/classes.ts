@@ -2,10 +2,10 @@ import type { FastifyInstance } from "fastify";
 import { pool } from "../db.js";
 
 export async function classRoutes(app: FastifyInstance) {
-  // «Klassekart over funnsteder»: the finds of one of the teacher's own groups.
+  // «Klassekart over funnsteder»: the finds of one of the groups the teacher teaches, by its Feide group id.
   app.get<{ Params: { group: string } }>("/api/klasser/:group/funn", async (request, reply) => {
     const viewer = request.viewer;
-    if (viewer.role !== "laerer" || !viewer.groups.includes(request.params.group)) {
+    if (viewer.role !== "laerer" || !viewer.groups.some((g) => g.id === request.params.group)) {
       return reply.code(403).send({ error: "Du har ikke tilgang til denne gruppen." });
     }
     const { rows } = await pool.query(

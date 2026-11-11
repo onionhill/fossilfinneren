@@ -9,13 +9,13 @@ import { useLanguage } from "../i18n/LanguageContext";
 export function TeacherPage() {
   const { viewer } = useAuth();
   const { t } = useLanguage();
-  const [group, setGroup] = useState(viewer?.groups[0] ?? "");
+  const [group, setGroup] = useState(viewer?.groups[0]?.id ?? "");
   const [points, setPoints] = useState<MapPoint[]>([]);
 
   useEffect(() => {
     if (!viewer || viewer.role !== "laerer" || !group) return;
     api
-      .classFinds(viewer.accessToken, group)
+      .classFinds(viewer, group)
       .then((finds) => setPoints(finds.map((f, i) => ({ id: String(i), label: `${f.pupil}: ${f.place}`, ...f }))))
       .catch(() => setPoints([]));
   }, [viewer, group]);
@@ -29,7 +29,9 @@ export function TeacherPage() {
         Gruppe{" "}
         <select value={group} onChange={(e) => setGroup(e.target.value)}>
           {viewer.groups.map((g) => (
-            <option key={g}>{g}</option>
+            <option key={g.id} value={g.id}>
+              {g.name}
+            </option>
           ))}
         </select>
       </label>

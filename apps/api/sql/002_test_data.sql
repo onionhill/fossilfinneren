@@ -8,5 +8,5 @@ VALUES ('fc:org:spusers.feide.no', 'asbjorn_elev@spusers.feide.no', 'Asbjørn El
 ON CONFLICT DO NOTHING;
 
 INSERT INTO find (org_id, pupil_feide_id, pupil_group, fossil_id, place, lat, lng)
-SELECT 'fc:org:spusers.feide.no', 'asbjorn_elev@spusers.feide.no', '3A naturfag', 'trilobitt', 'Slemmestad', 59.78, 10.49
+SELECT 'fc:org:spusers.feide.no', 'asbjorn_elev@spusers.feide.no', 'fc:gogroup:spusers.feide.no:3a-nat', 'trilobitt', 'Slemmestad', 59.78, 10.49
 WHERE NOT EXISTS (SELECT 1 FROM find);

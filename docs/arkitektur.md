@@ -31,10 +31,15 @@
 
 ## Tilgangsstyring
 
+- API-et godtar bare forespørsler med både Feides tilgangstoken og ID-token. ID-tokenet sjekkes mot Feides nøkler (`https://auth.dataporten.no/openid/jwks`), og mottakeren (`aud`) må være Fossilfinnerens klient. Et token utstedt til en annen tjeneste avvises. Se [apps/api/src/feide.ts](../apps/api/src/feide.ts).
 - Eleven ser bare sin egen feltdagbok.
-- Læreren ser elevene i sine egne undervisningsgrupper fra Feide (`groups-edu`).
+- Læreren ser elevene i gruppene der hen er lærer (`faculty`) i Feides undervisningsgrupper (`groups-edu`). Gruppene sammenlignes på Feides faste gruppe-ID, ikke på navnet.
 - Skolens lisens leses fra `groups-org` og eduPersonEntitlement (`urn:mace:fossilfinneren.no:lisens:`).
 - Data er logisk skilt per skoleeier: hver rad har `org_id`, og API-et filtrerer alltid på innlogget brukers organisasjon.
+
+## Sletting
+
+Hver natt sletter en jobb alle data for skoleeiere der abonnementet ble avsluttet for mer enn 180 dager siden: først bildene i objektlagringen, så abonnementet med elever, feltdagbøker og funn. Se [apps/api/src/jobs/retention.ts](../apps/api/src/jobs/retention.ts).
 
 ## Sikkerhetskopier
 

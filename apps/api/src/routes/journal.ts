@@ -32,7 +32,7 @@ export async function journalRoutes(app: FastifyInstance) {
     const { rows } = await pool.query(
       `INSERT INTO journal_entry (org_id, pupil_feide_id, pupil_group, text, photo_key)
        VALUES ($1, $2, $3, $4, $5) RETURNING id, text, created_at AS "createdAt"`,
-      [viewer.orgId, viewer.feideId, viewer.groups[0] ?? null, text, photoKey],
+      [viewer.orgId, viewer.feideId, viewer.groups[0]?.id ?? null, text, photoKey],
     );
     return reply.code(201).send(rows[0]);
   });
@@ -43,7 +43,7 @@ export async function journalRoutes(app: FastifyInstance) {
     const { rows } = await pool.query(
       `SELECT photo_key FROM journal_entry
         WHERE id = $1 AND org_id = $2 AND (pupil_feide_id = $3 OR pupil_group = ANY($4))`,
-      [request.params.id, viewer.orgId, viewer.feideId, viewer.role === "laerer" ? viewer.groups : []],
+      [request.params.id, viewer.orgId, viewer.feideId, viewer.role === "laerer" ? viewer.groups.map((g) => g.id) : []],
     );
     const photo = rows[0]?.photo_key ? await readPhoto(rows[0].photo_key) : null;
     if (!photo) return reply.code(404).send({ error: "Fant ikke bildet." });
@@ -59,7 +59,7 @@ export async function journalRoutes(app: FastifyInstance) {
       `UPDATE journal_entry SET teacher_comment = $1, commented_at = now()
         WHERE id = $2 AND org_id = $3 AND pupil_group = ANY($4)
         RETURNING id, text, teacher_comment AS "teacherComment"`,
-      [body.text, request.params.id, viewer.orgId, viewer.groups],
+      [body.text, request.params.id, viewer.orgId, viewer.groups.map((g) => g.id)],
     );
     if (rows.length === 0) return reply.code(404).send({ error: "Fant ikke funnet." });
     return rows[0];

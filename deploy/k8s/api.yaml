@@ -22,6 +22,9 @@ spec:
           env:
             - { name: WEB_ORIGIN, value: "https://fossilfinneren.no" }
             - { name: AUTH_MODE, value: feide }
+            - { name: FEIDE_ISSUER, value: "https://auth.dataporten.no" }
+            - { name: FEIDE_JWKS_URL, value: "https://auth.dataporten.no/openid/jwks" }
+            # FEIDE_CLIENT_ID comes from api-secrets.
             - { name: FEIDE_USERINFO_URL, value: "https://api.dataporten.no/userinfo/v1/userinfo" }
             - { name: FEIDE_GROUPS_URL, value: "https://groups-api.dataporten.no/groups/me/groups" }
             - { name: S3_ENDPOINT, value: "https://s3.hamburg.wolkenhafen.example" }

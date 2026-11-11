@@ -14,7 +14,7 @@ export function JournalPage() {
 
   useEffect(() => {
     if (!viewer) return;
-    api.journal(viewer.accessToken).then(setEntries).catch(() => setEntries([]));
+    api.journal(viewer).then(setEntries).catch(() => setEntries([]));
   }, [viewer]);
 
   if (!viewer) return <p>Logg inn for å se feltdagboken din.</p>;
@@ -22,7 +22,7 @@ export function JournalPage() {
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = event.currentTarget;
-    const entry = await api.addEntry(viewer.accessToken, new FormData(form));
+    const entry = await api.addEntry(viewer, new FormData(form));
     setEntries((current) => [entry, ...current]);
     setStatus(t("saved"));
     form.reset();

@@ -1,3 +1,4 @@
+import type { Viewer } from "../auth/AuthContext";
 import { config } from "../config";
 
 export interface JournalEntry {
@@ -9,27 +10,33 @@ export interface JournalEntry {
   teacherComment?: string;
 }
 
-async function request<T>(path: string, token: string, init: RequestInit = {}): Promise<T> {
+type Tokens = Pick<Viewer, "accessToken" | "idToken">;
+
+async function request<T>(path: string, tokens: Tokens, init: RequestInit = {}): Promise<T> {
   const response = await fetch(`${config.apiUrl}${path}`, {
     ...init,
     credentials: "include",
-    headers: { Authorization: `Bearer ${token}`, ...(init.headers ?? {}) },
+    headers: {
+      Authorization: `Bearer ${tokens.accessToken}`,
+      "X-Feide-Id-Token": tokens.idToken,
+      ...(init.headers ?? {}),
+    },
   });
   if (!response.ok) throw new Error(`API ${path} svarte ${response.status}`);
   return (await response.json()) as T;
 }
 
 export const api = {
-  journal: (token: string) => request<JournalEntry[]>("/api/feltdagbok", token),
-  addEntry: (token: string, entry: FormData) =>
-    request<JournalEntry>("/api/feltdagbok", token, { method: "POST", body: entry }),
-  classFinds: (token: string, group: string) =>
+  journal: (tokens: Tokens) => request<JournalEntry[]>("/api/feltdagbok", tokens),
+  addEntry: (tokens: Tokens, entry: FormData) =>
+    request<JournalEntry>("/api/feltdagbok", tokens, { method: "POST", body: entry }),
+  classFinds: (tokens: Tokens, groupId: string) =>
     request<Array<{ pupil: string; place: string; lat: number; lng: number }>>(
-      `/api/klasser/${encodeURIComponent(group)}/funn`,
-      token,
+      `/api/klasser/${encodeURIComponent(groupId)}/funn`,
+      tokens,
     ),
-  comment: (token: string, entryId: string, text: string) =>
-    request<JournalEntry>(`/api/feltdagbok/${entryId}/kommentar`, token, {
+  comment: (tokens: Tokens, entryId: string, text: string) =>
+    request<JournalEntry>(`/api/feltdagbok/${entryId}/kommentar`, tokens, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text }),

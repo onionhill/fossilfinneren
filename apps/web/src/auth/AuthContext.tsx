@@ -5,12 +5,19 @@ import { userManager } from "./feide";
 
 export type Role = "elev" | "laerer";
 
+export interface TeachingGroup {
+  id: string;
+  name: string;
+}
+
 export interface Viewer {
   name: string;
   role: Role;
   school: string;
-  groups: string[];
+  groups: TeachingGroup[];
   accessToken: string;
+  /** Sent to the API, which checks it was issued to Fossilfinneren's client. */
+  idToken: string;
 }
 
 interface AuthState {
@@ -28,15 +35,20 @@ const MOCK_VIEWERS: Record<Role, Viewer> = {
     name: "Asbjørn ElevEn",
     role: "elev",
     school: "Feide testskole",
-    groups: ["3A naturfag"],
+    groups: [{ id: "fc:gogroup:spusers.feide.no:3a-nat", name: "3A naturfag" }],
     accessToken: "mock-elev",
+    idToken: "",
   },
   laerer: {
     name: "Turid LærerEn",
     role: "laerer",
     school: "Feide testskole",
-    groups: ["3A naturfag", "4B naturfag"],
+    groups: [
+      { id: "fc:gogroup:spusers.feide.no:3a-nat", name: "3A naturfag" },
+      { id: "fc:gogroup:spusers.feide.no:4b-nat", name: "4B naturfag" },
+    ],
     accessToken: "mock-laerer",
+    idToken: "",
   },
 };
 
@@ -52,12 +64,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const user = await userManager.getUser();
     if (!user || user.expired) return setViewer(null);
     const response = await fetch(`${config.apiUrl}/api/meg`, {
-      headers: { Authorization: `Bearer ${user.access_token}` },
+      headers: { Authorization: `Bearer ${user.access_token}`, "X-Feide-Id-Token": user.id_token ?? "" },
       credentials: "include",
     });
     if (!response.ok) return setViewer(null);
-    const me = (await response.json()) as Omit<Viewer, "accessToken">;
-    setViewer({ ...me, accessToken: user.access_token });
+    const me = (await response.json()) as Omit<Viewer, "accessToken" | "idToken">;
+    setViewer({ ...me, accessToken: user.access_token, idToken: user.id_token ?? "" });
   }, []);
 
   useEffect(() => {
