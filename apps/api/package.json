@@ -1,0 +1,39 @@
+{
+  "name": "@fossilfinneren/api",
+  "version": "2.4.0",
+  "private": true,
+  "description": "Fossilfinneren – API for feltdagbok, oppdrag og klassekart",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --env-file=../../.env src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js",
+    "lint": "eslint .",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "db:migrate": "tsx --env-file=../../.env src/migrate.ts",
+    "job:retention": "node dist/jobs/retention.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.812.0",
+    "@fastify/cookie": "^11.0.2",
+    "@fastify/cors": "^11.0.1",
+    "@fastify/multipart": "^9.0.3",
+    "fastify": "^5.3.3",
+    "nodemailer": "^7.0.3",
+    "pg": "^8.16.0",
+    "zod": "^3.25.7"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.27.0",
+    "@types/node": "^22.15.21",
+    "@types/nodemailer": "^6.4.17",
+    "@types/pg": "^8.15.2",
+    "eslint": "^9.27.0",
+    "globals": "^16.1.0",
+    "tsx": "^4.19.4",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.32.1",
+    "vitest": "^3.1.4"
+  }
+}

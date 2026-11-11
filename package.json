@@ -1,0 +1,18 @@
+{
+  "name": "fossilfinneren",
+  "private": true,
+  "description": "Fossilfinneren – utforsk fossiler og forhistoriske dyr i naturfag på 1.–4. trinn",
+  "packageManager": "pnpm@12.15.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "pnpm --parallel -r dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "test:a11y": "pnpm --filter @fossilfinneren/web test:a11y",
+    "db:migrate": "pnpm --filter @fossilfinneren/api db:migrate"
+  }
+}

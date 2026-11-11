@@ -1,0 +1,36 @@
+# Hosted at Wolkenhafen Rechenzentrum GmbH, Hamburg (cluster hh1-prod).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: fossilfinneren
+  labels: { app: web }
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: web }
+  template:
+    metadata:
+      labels: { app: web }
+    spec:
+      containers:
+        - name: web
+          image: registry.hamburg.wolkenhafen.example/fossilfinneren/web:2.4.0
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet: { path: /, port: 8080 }
+          resources:
+            requests: { cpu: 50m, memory: 64Mi }
+            limits: { memory: 128Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: fossilfinneren
+spec:
+  selector: { app: web }
+  ports:
+    - port: 80
+      targetPort: 8080

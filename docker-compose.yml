@@ -1,0 +1,35 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: fossilfinneren
+      POSTGRES_PASSWORD: fossilfinneren
+      POSTGRES_DB: fossilfinneren
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  api:
+    build: ./apps/api
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://fossilfinneren:fossilfinneren@postgres:5432/fossilfinneren
+    ports:
+      - "4000:4000"
+    depends_on:
+      - postgres
+
+  web:
+    build:
+      context: ./apps/web
+      args:
+        VITE_AUTH_MODE: mock
+        VITE_API_URL: http://localhost:4000
+    ports:
+      - "8080:8080"
+    depends_on:
+      - api
+
+volumes:
+  pgdata:

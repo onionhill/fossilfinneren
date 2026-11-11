@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  namespace: fossilfinneren
+  labels: { app: api }
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: api }
+  template:
+    metadata:
+      labels: { app: api }
+    spec:
+      containers:
+        - name: api
+          image: registry.hamburg.wolkenhafen.example/fossilfinneren/api:2.4.0
+          ports:
+            - containerPort: 4000
+          envFrom:
+            - secretRef: { name: api-secrets }
+          env:
+            - { name: WEB_ORIGIN, value: "https://fossilfinneren.no" }
+            - { name: AUTH_MODE, value: feide }
+            - { name: FEIDE_USERINFO_URL, value: "https://api.dataporten.no/userinfo/v1/userinfo" }
+            - { name: FEIDE_GROUPS_URL, value: "https://groups-api.dataporten.no/groups/me/groups" }
+            - { name: S3_ENDPOINT, value: "https://s3.hamburg.wolkenhafen.example" }
+            - { name: SMTP_HOST, value: "smtp.liffeymail.example" }
+            - { name: RETENTION_DAYS_AFTER_SUBSCRIPTION, value: "180" }
+          readinessProbe:
+            httpGet: { path: /api/helse, port: 4000 }
+          resources:
+            requests: { cpu: 100m, memory: 128Mi }
+            limits: { memory: 256Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api
+  namespace: fossilfinneren
+spec:
+  selector: { app: api }
+  ports:
+    - port: 80
+      targetPort: 4000

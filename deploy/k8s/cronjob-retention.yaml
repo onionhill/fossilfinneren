@@ -1,0 +1,22 @@
+# Deletes pupil data 180 days after a school's subscription ended. Runs nightly.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: retention
+  namespace: fossilfinneren
+spec:
+  schedule: "15 2 * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: retention
+              image: registry.hamburg.wolkenhafen.example/fossilfinneren/api:2.4.0
+              command: ["node", "dist/jobs/retention.js"]
+              envFrom:
+                - secretRef: { name: api-secrets }
+              env:
+                - { name: RETENTION_DAYS_AFTER_SUBSCRIPTION, value: "180" }

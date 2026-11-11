@@ -1,0 +1,32 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: fossilfinneren
+  namespace: fossilfinneren
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - fossilfinneren.no
+        - api.fossilfinneren.no
+      secretName: fossilfinneren-tls
+  rules:
+    - host: fossilfinneren.no
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: { name: web, port: { number: 80 } }
+    - host: api.fossilfinneren.no
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: { name: api, port: { number: 80 } }
+# cdn.fossilfinneren.no, innhold.fossilfinneren.no and video.fossilfinneren.no are
+# buckets in Wolkenhafen's object storage behind their CDN, set up in cdn.md.
