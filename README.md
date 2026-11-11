@@ -9,6 +9,12 @@ Tjenesten er laget for naturfag på 1.–4. trinn. Elevene leter etter fossiler 
 - **Innlogging:** Feide (https://fossilfinneren.no/logg-inn)
 - **Personvern:** https://fossilfinneren.no/personvern · personvern@fossilfinneren.example
 
+## Skjermbilder
+
+| Forside | Fossilkart | Oppdrag |
+| ------- | ---------- | ------- |
+| ![Forsiden](docs/skjermbilder/forside.jpg) | ![Fossilkartet med kartdata fra Kartverket](docs/skjermbilder/fossilkart.jpg) | ![Oppdrag fra læreren](docs/skjermbilder/oppdrag.jpg) |
+
 ## Funksjoner
 
 - **Fossilkart** – kart over funnsteder i Norge, med kartdata fra Kartverket.
